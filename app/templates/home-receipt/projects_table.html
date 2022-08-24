@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_formhelpers_add_product.html" import render_field %}
+{% from "_formhelpers_update_receipt.html" import render_field_up %}
+
+{% block content %}
+<div class="flex-shrink-0">
+    <div class="p-2 mb-4 border border-light rounded">
+        <h6>Manage Projects</h6>
+        <form action="" method="post">
+            <div class="row p-2">
+                  <label class="col-sm-2 col-form-label">Project Name</label>
+                  <div class="col-sm-6">
+                      {{ render_field(form.project_name, class="form-control", placeholder="Gaujac") }}
+                  </div>
+                  <div class="col-sm-2">
+                      <button type="submit" class="btn btn-success ">
+                          <i class="bi p-1 bi-patch-plus-fill"></i>
+                          Add</button>
+                  </div>
+            </div>
+        </form>
+    </div>
+    <table id="data_table" class="my-3 table table-striped">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Spends {{ year }}</th>
+        <th>Revenues {{ year }}</th>
+        <th>Spends</th>
+        <th>Revenues</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in query %}
+          <tr>
+            <td>{{ project.name }}</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>
+              <div class="ms-auto px-2">
+                    <a id='del_{{project.id}}'
+                       href="{{url_for('receipt_blueprint.del_project', id_project=project.id)}}"
+                       role="button" class="btn btn-outline-danger btn-sm">
+                      <i class="bi bi-trash"></i></a>
+                  </div>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  ocr-receipt:
+    container_name: ocr_receipt
+    restart: always
+    ports:
+      - 9021:5002
+    build: .
+    environment:
+      DB_NAME: db_ocr
+      DEBUG: "False"
+      SECRET_KEY: Secret###¨¨Ke7
+      DB_ENGINE: mysql+pymysql
+      DB_HOST: ocrdb
+      DB_PORT: 3306
+      DB_USERNAME: db_ocr
+      DB_PASS: zTDefLx4f4Q8VXBKYkyFVGQ8
+    depends_on:
+      - "ocrdb"
+    volumes:
+      - /volume1/docker/ocr-receipt/receipts:/app/static/receipts
+
+  ocrdb:
+    image: mariadb
+    restart: always
+    ports:
+        - 9020:3306
+    environment:
+      MYSQL_DATABASE: db_ocr
+      MYSQL_USER: db_ocr
+      MYSQL_PASSWORD: zTDefLx4f4Q8VXBKYkyFVGQ8
+      MYSQL_ROOT_PASSWORD: zTDefLx4f4Q8VXBKYkyFVGQ8
+      TZ: Europe/Paris
+    volumes:
+      - /volume1/docker/ocr-receipt/db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 9022:80
+    environment:
+      - PMA_ARBITRARY=1
+
+networks:
+  ocr-network:
+    driver: custom-driver-1

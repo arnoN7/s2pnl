@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_formhelpers_add_product.html" import render_field %}
+{% from "_formhelpers_update_receipt.html" import render_field_up %}
+
+{% block content %}
+<div class="border p-2 rounded-1 m-2">
+    <div class="border p-2 rounded-1 m-2">
+        <form action="{{url_for('receipt_blueprint.settings')}}" method="post">
+            <div class="row p-2 align-items-end">
+                <div class="col-sm-4">
+                    <h5>Exclude own address</h5>
+                    {{ render_field(form.address, class="form-control") }}
+                </div>
+                <div class="col-sm-2 ">
+                    <button type="submit" class="my-2 btn btn-primary ">
+                        <i class="bi p-1 bi-eyeglasses"></i>
+                        exclude address</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table id="data_table" class="my-3 table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Address</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for address in addresses %}
+          <tr>
+            <td>{{ address.id }}</td>
+            <td>{{ address.address }}</td>
+            <td>
+              <a href="{{url_for('receipt_blueprint.del_settings', id_address=address.id)}}"
+                       role="button" class="btn btn-outline-danger btn-sm">
+                      <i class="bi bi-x-circle"></i></a>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
