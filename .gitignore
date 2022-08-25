@@ -8,3 +8,5 @@
 resr/ocr-receipt.sqlite
 test_regex.py
 /app/authentication/
+/app/db.sqlite3
+/app/static/1_Gaujac/bills/Devis SCHIRO MENUISERIES & FERMETURES - ROVER n°01860 2.pdf

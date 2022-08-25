@@ -50,10 +50,15 @@ def index():
                            sel_project=get_sel_project(), form=bill_form, file_form=file_form)
 
 
-@blueprint.route('/shops')
-@register_breadcrumb(blueprint, '.shops', 'Shops')
-def shops():
-    return render_template('home-receipt/shops_table.html', title='Bootstrap Table')
+@blueprint.route('/suppliers')
+@register_breadcrumb(blueprint, '.suppliers', 'Suppliers')
+def suppliers():
+    query_pj = Project.query.all()
+    query_suppliers = db.session.query(Supplier, func.count(Bill.id), func.sum(Bill.amount)).\
+        join(Bill, Supplier.id == Bill.supplier_id). \
+        filter(Bill.project_id == get_sel_project()).group_by(Supplier.id).all()
+    return render_template('home-receipt/suppliers.html', title='Bootstrap Table', query=query_suppliers,
+                           projects=query_pj, sel_project=get_sel_project())
 
 
 @blueprint.route('/products')
@@ -118,7 +123,8 @@ def del_settings(id_address):
 
 
 @blueprint.route('/bills', methods=['GET', 'POST'])
-def bill_add():
+@register_breadcrumb(blueprint, '.bills', 'Bills')
+def bills():
     query_pj = Project.query.all()
     query_bill = db.session.query(Bill, Supplier).join(Supplier, Supplier.id == Bill.supplier_id).\
         filter(Bill.project_id == get_sel_project()).all()
@@ -134,7 +140,7 @@ def bill_add():
         uploaded_file = request.files[form.file_input.name]
         uploaded_file.save(pf_folder + uploaded_file.filename)
         parse_bill(pf_folder + uploaded_file.filename, pj.id)
-        return redirect(url_for('receipt_blueprint.bill_add'))
+        return redirect(url_for('receipt_blueprint.bills'))
     return render_template('home-receipt/add_bill.html', title='Bootstrap Table', form=form,
                            year=dateutil.utils.today().year, projects=query_pj, bills=query_bill,
                            sel_project=get_sel_project())

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table id="data_table" class="my-3 table table-striped">
+    <thead>
+      <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Email / Phone</th>
+          <th>Siret</th>
+          <th>Nb Bills</th>
+          <th>Amount € (VAT inc.)</th>
+          <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for supplier, nb, s in query %}
+          <tr>
+              <td>{{ supplier.name }}</td>
+              <td>{{ supplier.address }}
+                  {{ supplier.postcode }} {{ supplier.city }}
+              </td>
+              <td>{{ supplier.email }} <br/>
+              {{ supplier.phone }}</td>
+              <td>{{ supplier.siret }}</td>
+              <td>{{ nb }}</td>
+              {% if s is not none %}
+              <td>{{ "%.2f €"|format(s) }}</td>
+              {% else %}
+              <td></td>
+              {% endif %}
+            <td>
+              <a href="{{ url_for('receipt_blueprint.bill_details', id_bill=supplier.id)}}"
+                    class="btn btn-primary">
+                <i class="mx-1 bi bi-zoom-in"></i> details
+              </a></td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
