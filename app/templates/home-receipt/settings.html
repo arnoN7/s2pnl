@@ -7,14 +7,14 @@
     <div class="border p-2 rounded-1 m-2">
         <form action="{{url_for('receipt_blueprint.settings')}}" method="post">
             <div class="row p-2 align-items-end">
+                <h6>Exclude own personal information (phone, address, email)</h6>
                 <div class="col-sm-4">
-                    <h5>Exclude own address</h5>
                     {{ render_field(form.address, class="form-control") }}
                 </div>
                 <div class="col-sm-2 ">
                     <button type="submit" class="my-2 btn btn-primary ">
                         <i class="bi p-1 bi-eyeglasses"></i>
-                        exclude address</button>
+                        exclude</button>
                 </div>
             </div>
         </form>

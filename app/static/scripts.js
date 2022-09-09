@@ -67,7 +67,19 @@ $(document).ready(function(){
 
 });
 
-
+function refresh_supplier() {
+    var sel = document.getElementById('supplier_select').value
+    for (const supplier of suppliers) {
+        if (supplier.id == sel){
+            document.getElementById('supplier_name').value = supplier.name
+            document.getElementById('supplier_email').value = supplier.email
+            document.getElementById('supplier_phone').value = supplier.phone
+            document.getElementById('supplier_address').value = supplier.address
+            document.getElementById('supplier_postcode').value = supplier.postcode
+            document.getElementById('supplier_city').value = supplier.city
+        }
+    }
+}
 
 
 function update_product(url, data_name, value, data_pk) {

@@ -23,10 +23,18 @@ class AnalysisBillForm(Form):
     file_input = FileField("PDF file with bill details")
     supplier_select = StringField("Select Supplier", [validators.DataRequired()])
 
-class AddBillForm(Form):
-    supplier_select = StringField("Select Supplier", [validators.DataRequired()])
+class BillForm(Form):
+    supplier_select = SelectField("Select Supplier", [validators.DataRequired()])
+    type_select = SelectField("Bill Type", [validators.DataRequired()])
     vat_price = FloatField("VAT Price", [validators.DataRequired(), validators.number_range(min=0)])
     date = DateField("Bill date", [validators.DataRequired()])
+    supplier_name = StringField('Supplier name')
+    supplier_address = StringField('Supplier address')
+    supplier_postcode = IntegerField('Supplier postcode', [validators.number_range(min=0)])
+    supplier_city = StringField('Supplier city')
+    supplier_email = StringField('Supplier city')
+    supplier_siret = StringField('Supplier SIRET')
+    supplier_phone = StringField('Supplier phone')
 
 class SettingsForm(Form):
     address = StringField("Address to exclude", [validators.DataRequired()])
@@ -44,10 +52,9 @@ def route_default():
 @register_breadcrumb(blueprint, '.', 'Home')
 def index():
     query_pj = Project.query.all()
-    bill_form = AddBillForm(request.form)
     file_form = AnalysisBillForm(request.form)
     return render_template('home-receipt/receipts_table.html', title='Bootstrap Table', projects=query_pj,
-                           sel_project=get_sel_project(), form=bill_form, file_form=file_form)
+                           sel_project=get_sel_project(), file_form=file_form)
 
 
 @blueprint.route('/suppliers')
@@ -65,12 +72,6 @@ def suppliers():
 @register_breadcrumb(blueprint, '.products', 'Products')
 def products():
     return render_template('home-receipt/products_table.html', title='Bootstrap Table')
-
-
-@blueprint.route('/receipt/<id_receipt>')
-@register_breadcrumb(blueprint, '.receipt', '/', dynamic_list_constructor=bc.view_receipt_id)
-def receipt_detail(id_receipt):
-    return render_template('home-receipt/receipt_details_table.html', title='Bootstrap Table')
 
 
 @blueprint.route('/project', methods=['GET', 'POST'])
@@ -147,11 +148,61 @@ def bills():
 
 
 @blueprint.route('/bill/<id_bill>', methods=['GET', 'POST'])
-def bill_details():
+def bill_details(id_bill):
+    query_pj = Project.query.all()
+    bill = Bill.query.filter_by(id=id_bill).first()
+    form = BillForm()
+    if bill is not None:
+        supplier = Supplier.query.filter_by(id=bill.supplier_id).first()
+        all_suppliers = op.query2dicts(Supplier.query.all())
+        if supplier is not None:
+            form.vat_price.default = bill.amount
+            form.date.default = bill.date
+            form.supplier_select.choices = op.get_suppliers()
+            form.supplier_select.default = bill.supplier_id
+            form.type_select.choices = ct.BILL_TYPE_SELECT
+            form.supplier_name.default = supplier.name
+            form.supplier_city.default = supplier.city
+            form.supplier_email.default = supplier.email
+            form.supplier_phone.default = supplier.phone
+            form.supplier_address.default = supplier.address
+            form.supplier_postcode.default = supplier.postcode
+            form.supplier_siret.default = supplier.siret
+            form.process()
+    return render_template('home-receipt/bill_details.html', title='Bootstrap Table',
+                           year=dateutil.utils.today().year, projects=query_pj,
+                           sel_project=get_sel_project(), bill=bill, form_bill=form, suppliers=all_suppliers)
 
-    return render_template('home-receipt/add_bill.html', title='Bootstrap Table', form=form,
-                           year=dateutil.utils.today().year, projects=query_pj, bills=query_bill,
-                           sel_project=get_sel_project())
+@blueprint.route('/update_bill/<id_bill>', methods=['POST'])
+def update_bill(id_bill):
+    form = BillForm(request.form)
+    bill = Bill.query.filter_by(id=id_bill).first()
+    form.supplier_select.choices = op.get_suppliers()
+    form.type_select.choices = ct.BILL_TYPE_SELECT
+    if request.method == 'POST' and form.validate() and bill is not None:
+        bill.amount = form.vat_price.data
+        bill.date = form.date.data
+        bill.supplier_id = form.supplier_select.data
+        supplier = Supplier.query.filter_by(id=bill.supplier_id).first()
+        if supplier is not None:
+            supplier.siret = form.supplier_siret.data
+            supplier.phone = form.supplier_phone.data
+            supplier.name = form.supplier_name.data
+            supplier.postcode = form.supplier_postcode.data
+            supplier.address = form.supplier_address.data
+            supplier.email = form.supplier_email.data
+            supplier.city = form.supplier_city.data
+        db.session.commit()
+    return redirect(url_for('receipt_blueprint.bill_details', id_bill=id_bill))
+
+
+
+@blueprint.route('/bill/del/<id_bill>', methods=['GET'])
+def del_bill(id_bill):
+    Bill.query.filter_by(id=id_bill).delete()
+    db.session.commit()
+    op.delete_ophan_supplier()
+    return redirect(url_for('receipt_blueprint.bills'))
 
 
 @blueprint.route('/receipt/del/<id_receipt>')

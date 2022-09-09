@@ -4,42 +4,48 @@
 
 {% block content %}
 <div class="border p-2 rounded-1 m-2">
-    <div class="border p-2 rounded-1 m-2">
-        <form action="{{url_for('receipt_blueprint.bills')}}" method="post" enctype="multipart/form-data">
-            <div class="row p-2 align-items-end">
-                <div class="col-sm-4">
-                    <h5>Bill in PDF<i class="mx-1 bi bi-file-pdf"></i></h5>
-                    {{ render_field(form.file_input, class="form-control-file") }}
-                </div>
-                <div class="col-sm-2 ">
-                    <button type="submit" class="my-2 btn btn-primary ">
-                        <i class="bi p-1 bi-eyeglasses"></i>
-                        analysis</button>
-                </div>
+    <form action="{{url_for('receipt_blueprint.bills')}}" method="post" enctype="multipart/form-data">
+        <div class="row p-2 align-items-end">
+            <div class="col-sm-4">
+                <h5>Bill in PDF<i class="mx-1 bi bi-file-pdf"></i></h5>
+                {{ render_field(form.file_input, class="form-control-file") }}
             </div>
-        </form>
-    </div>
+            <div class="col-sm-2 ">
+                <button type="submit" class="my-2 btn btn-primary ">
+                    <i class="bi p-1 bi-eyeglasses"></i>
+                    analysis</button>
+            </div>
+        </div>
+    </form>
 </div>
 <table id="data_table" class="my-3 table table-striped">
     <thead>
       <tr>
-        <th>Supplier</th>
-        <th>Date</th>
-        <th>Amount € (VAT inc.)</th>
-        <th></th>
+          <th>Supplier</th>
+          <th>Date</th>
+          <th>Amount € (VAT inc.)</th>
+          <th>Details</th>
+          <th></th>
       </tr>
     </thead>
     <tbody>
       {% for bill, supplier in bills %}
           <tr>
-            <td>{{ supplier.name }}</td>
+            <td>{{ supplier.id }}-{{ supplier.name }}</td>
             <td>{{ bill.date }}</td>
             <td>{{ "%.2f €"|format(bill.amount) }}</td>
             <td>
               <a href="{{ url_for('receipt_blueprint.bill_details', id_bill=bill.id)}}"
                     class="btn btn-primary">
                 <i class="mx-1 bi bi-zoom-in"></i> details
-              </a></td>
+              </a>
+            </td>
+              <td>
+                  <a id='del_{{bill.id}}'
+                       href="{{ url_for('receipt_blueprint.del_bill', id_bill=bill.id)}}"
+                       role="button" class="btn btn-outline-danger btn-sm">
+                      <i class="bi bi-trash"></i></a>
+              </td>
           </tr>
       {% endfor %}
     </tbody>

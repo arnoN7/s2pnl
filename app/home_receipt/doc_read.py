@@ -20,6 +20,9 @@ REGEX_RECEIPT = [["siret", r"siret[^\d]+(?P<siret>[\d ]+)"],
                  ["date", r"(?P<date>(\d{2}/){2}\d{4})"],
                  ["total", r"total ttc[^\d]+(?P<total>([\d ]+[,\.]\d{2}))"]]
 
+# Remove app folder in path file (app/static/project/file.pdf -> /static/project/file.pdf)
+REGEX_FILE_PATH = r"^[^\/]+"
+
 
 def extract_text(file):
     pdf = pdfplumber.open(file)
@@ -83,7 +86,7 @@ def parse_bill(file, pj_id):
     # Convert date to datetime
     result['date'] = list(map(lambda dt: datetime.strptime(dt, '%d/%m/%Y'), result['date']))
     bill = Bill(amount=next(iter(result['total']), 0), date=next(iter(result['date']), date.today()),
-                file=file, supplier_id=supplier.id, project_id=pj_id,
+                file=re.sub(REGEX_FILE_PATH, "", file), supplier_id=supplier.id, project_id=pj_id,
                 dtn_end_amort=next(iter(result['date']), date.today()))
     db.session.add(bill)
     db.session.commit()

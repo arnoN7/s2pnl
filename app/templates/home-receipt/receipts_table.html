@@ -11,51 +11,7 @@
         "{{month}}",
     {% endfor %}];
 </script>
-<div class="accordion-item">
-    <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        <i class="mx-1 bi bi-graph-down"></i>Add new bill
-      </button>
-    </h2>
-    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-          <form action="{{url_for('receipt_blueprint.bills')}}" method="post" enctype="multipart/form-data">
-              <div class="row p-2 align-items-end">
-                <div class="col-sm-4">
-                      <h5>Bill in PDF<i class="mx-1 bi bi-file-pdf"></i></h5>
-                      {{ render_field(file_form.file_input, class="form-control-file") }}
-                </div>
-                <div class="col-sm-2 ">
-                      <button type="submit" class="my-2 btn btn-primary ">
-                          <i class="bi p-1 bi-eyeglasses"></i>
-                          analysis</button>
-                </div>
-              </div>
-          </form>
-        <div class="border p-2 rounded-1">
-            <h5 class="mx-2">Bill details</h5>
-            <div class="row p-2">
-                <div class="col-sm-4">
-                    <h6>Supplier Name</h6>
-                    {{ render_field_up(form.supplier_select, class="form-control", placeholder="SCHIRO Menuiseries") }}
-                </div>
-            </div>
-            <div class="row m-2 py-2 border-top">
-                <div class="col-sm-4 ">
-                    <h6>Date</h6>
-                    {{ render_field_up(form.date, class="form-control") }}
-                </div>
-            </div>
-            <div class="row m-2 py-2 border-top">
-                <div class="col-sm-4">
-                    <h6>Amount in € (VAT included)</h6>
-                    {{ render_field_up(form.vat_price, class="form-control") }}
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-</div>
+
 <div class="container">
     <div class="row p-3">
         <div class="col px-2">

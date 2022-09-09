@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% from "_formhelpers_add_product.html" import render_field %}
+{% from "_formhelpers_update_receipt.html" import render_field_up %}
+
+{% block content %}
+<div class="border p-2 rounded-1 m-2">
+    <form action="{{url_for('receipt_blueprint.update_bill', id_bill=bill.id)}}" method="post" enctype="multipart/form-data">
+        <div class="row p-2 align-items-end">
+                <h5>Bill Details<i class="mx-1 bi bi-file-pdf"></i></h5>
+                <div class="container">
+                <div class="row p-2">
+                  <div class="col">
+                    <div class="input-group">
+                        <script>
+                            var suppliers = {{ suppliers|tojson|safe }};
+                        </script>
+                      <span class="input-group-text" ><i class="mx-1 bi bi-shop"></i>Supplier</p></span>
+                       {{ render_field_up(form_bill.supplier_select, class="form-select", onchange="refresh_supplier()") }}
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="input-group flex-nowrap">
+                      <span class="input-group-text" id="total-wrapping"><i class="bi bi-currency-euro"></i>Total</p></span>
+                      {{ render_field_up(form_bill.vat_price, class="form-control") }}
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="input-group flex-nowrap">
+                      <span class="input-group-text" id="date-wrapping"><i class="px-1 bi bi-calendar3-event"></i>Date</p></span>
+                      {{ render_field_up(form_bill.date, class="form-control") }}
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-2">
+                    <div class="col">
+                    <div class="input-group">
+                      <span class="input-group-text" ><i class="mx-1 bi bi-receipt"></i>Type</p></span>
+                       {{ render_field_up(form_bill.type_select, class="form-select") }}
+                    </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+        <div class="row p-2 align-items-end">
+                <h5>Supplier Details<i class="mx-1 bi bi-file-pdf"></i></h5>
+                <div class="container">
+                <div class="row p-2">
+                  <div class="col">
+                    <div class="input-group">
+                      <span class="input-group-text" ><i class="mx-1 bi bi-shop"></i>Supplier Name</p></span>
+                       {{ render_field_up(form_bill.supplier_name, class="form-control") }}
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="input-group flex-nowrap">
+                      <span class="input-group-text"><i class="bi bi-currency-euro"></i>email</p></span>
+                      {{ render_field_up(form_bill.supplier_email, class="form-control") }}
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="input-group flex-nowrap">
+                      <span class="input-group-text"><i class="px-1 bi bi-calendar3-event"></i>Phone</p></span>
+                      {{ render_field_up(form_bill.supplier_phone, class="form-control") }}
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-2">
+                    <div class="col">
+                    <div class="input-group">
+                      <span class="input-group-text" ><i class="mx-1 bi bi-receipt"></i>Address</p></span>
+                       {{ render_field_up(form_bill.supplier_address, class="form-control") }}
+                    </div>
+                  </div>
+                    <div class="col">
+                    <div class="input-group">
+                      <span class="input-group-text" ><i class="mx-1 bi bi-receipt"></i>Post code</p></span>
+                       {{ render_field_up(form_bill.supplier_postcode, class="form-control") }}
+                    </div>
+                  </div>
+                    <div class="col">
+                    <div class="input-group">
+                      <span class="input-group-text" ><i class="mx-1 bi bi-receipt"></i>City</p></span>
+                       {{ render_field_up(form_bill.supplier_city, class="form-control") }}
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-2">
+                    <button type="submit" class="btn btn-success btn-sm"><i class="bi p-1 bi-arrow-repeat"></i>Update</button>
+                </div>
+          </div>
+        </div>
+    </form>
+</div>
+<embed src="{{ bill.file }}" width=800 height=500 type='application/pdf'/>
+{% endblock %}
